@@ -86,7 +86,7 @@ export function useCreateTask() {
           tags: input.tags ?? [],
           subtasks: input.subtasks ?? [],
           position: input.position ?? Date.now(),
-        })
+        } as never)
         .select("*")
         .single();
       if (error) throw error;
@@ -100,7 +100,7 @@ export function useUpdateTask() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, patch }: { id: string; patch: Partial<Task> }) => {
-      const { error } = await supabase.from("tasks").update(patch).eq("id", id);
+      const { error } = await supabase.from("tasks").update(patch as never).eq("id", id);
       if (error) throw error;
     },
     onMutate: async ({ id, patch }) => {
