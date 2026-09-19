@@ -100,6 +100,7 @@ function Dashboard() {
         onFiltersChange={setFilters}
         allTags={allTags}
         email={user.email ?? "Account"}
+        exportTasks={visible}
       />
 
       <main className="mx-auto max-w-[1600px] space-y-6 px-4 py-6">
