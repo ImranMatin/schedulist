@@ -204,6 +204,27 @@ export function AppHeader({
           </PopoverContent>
         </Popover>
 
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Export</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Download tasks</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => void handleExport("csv")}>
+              <FileSpreadsheet className="h-4 w-4" />
+              CSV / Excel
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void handleExport("pdf")}>
+              <FileText className="h-4 w-4" />
+              PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle dark mode">
           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
