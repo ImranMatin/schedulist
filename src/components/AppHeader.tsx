@@ -73,6 +73,20 @@ export function AppHeader({
     void navigate({ to: "/auth", replace: true });
   }
 
+  async function handleExport(kind: "csv" | "pdf") {
+    if (!exportTasks.length) {
+      toast.info("There are no tasks to export yet");
+      return;
+    }
+    try {
+      if (kind === "csv") exportTasksToCsv(exportTasks);
+      else await exportTasksToPdf(exportTasks);
+      toast.success(`Downloaded ${exportTasks.length} task(s)`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Export failed");
+    }
+  }
+
   function toggleValue<T>(list: T[], value: T): T[] {
     return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
   }
