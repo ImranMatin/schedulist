@@ -56,7 +56,7 @@ Build a full-stack, responsive task management system connected to a Supabase ba
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://flow-task-smart.lovable.app
+**Live app**: https://schedulist.lovable.app/
 
 ## Build with Lovable
 
