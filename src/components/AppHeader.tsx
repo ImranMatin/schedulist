@@ -4,6 +4,9 @@ import {
   CalendarDays,
   CheckSquare,
   Columns3,
+  Download,
+  FileSpreadsheet,
+  FileText,
   Filter,
   LogOut,
   Moon,
@@ -11,6 +14,9 @@ import {
   Sun,
   Table2,
 } from "lucide-react";
+import { toast } from "sonner";
+import { exportTasksToCsv, exportTasksToPdf } from "@/lib/export";
+import type { Task } from "@/lib/tasks";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +49,7 @@ export function AppHeader({
   onFiltersChange,
   allTags,
   email,
+  exportTasks,
 }: {
   view: ViewKey;
   onViewChange: (view: ViewKey) => void;
@@ -50,6 +57,7 @@ export function AppHeader({
   onFiltersChange: (filters: Filters) => void;
   allTags: string[];
   email: string;
+  exportTasks: Task[];
 }) {
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
@@ -63,6 +71,20 @@ export function AppHeader({
     queryClient.clear();
     await supabase.auth.signOut();
     void navigate({ to: "/auth", replace: true });
+  }
+
+  async function handleExport(kind: "csv" | "pdf") {
+    if (!exportTasks.length) {
+      toast.info("There are no tasks to export yet");
+      return;
+    }
+    try {
+      if (kind === "csv") exportTasksToCsv(exportTasks);
+      else await exportTasksToPdf(exportTasks);
+      toast.success(`Downloaded ${exportTasks.length} task(s)`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Export failed");
+    }
   }
 
   function toggleValue<T>(list: T[], value: T): T[] {
@@ -181,6 +203,27 @@ export function AppHeader({
             ) : null}
           </PopoverContent>
         </Popover>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Export</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Download tasks</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => void handleExport("csv")}>
+              <FileSpreadsheet className="h-4 w-4" />
+              CSV / Excel
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => void handleExport("pdf")}>
+              <FileText className="h-4 w-4" />
+              PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle dark mode">
           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

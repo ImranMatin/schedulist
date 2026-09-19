@@ -31,7 +31,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,6 +46,15 @@ function AuthPage() {
     event.preventDefault();
     setLoading(true);
     try {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        toast.success("Password reset link sent. Check your inbox.");
+        setMode("signin");
+        return;
+      }
       if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
@@ -82,12 +91,18 @@ function AuthPage() {
 
         <div className="rounded-2xl border bg-card p-6 shadow-[var(--shadow-card)]">
           <h1 className="text-2xl font-bold">
-            {mode === "signin" ? "Welcome back" : "Create your workspace"}
+            {mode === "signin"
+              ? "Welcome back"
+              : mode === "signup"
+                ? "Create your workspace"
+                : "Reset your password"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {mode === "signin"
               ? "Sign in to reach your tasks."
-              : "Sign up with email and password to get started."}
+              : mode === "signup"
+                ? "Sign up with email and password to get started."
+                : "Enter your email and we'll send you a reset link."}
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -103,22 +118,39 @@ function AuthPage() {
                 placeholder="you@example.com"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-              />
-            </div>
+            {mode === "forgot" ? null : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Password</Label>
+                  {mode === "signin" ? (
+                    <button
+                      type="button"
+                      onClick={() => setMode("forgot")}
+                      className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      Forgot password?
+                    </button>
+                  ) : null}
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                />
+              </div>
+            )}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              {mode === "signin" ? "Sign in" : "Create account"}
+              {mode === "signin"
+                ? "Sign in"
+                : mode === "signup"
+                  ? "Create account"
+                  : "Send reset link"}
             </Button>
           </form>
 
