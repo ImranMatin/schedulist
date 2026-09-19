@@ -49,6 +49,7 @@ export function AppHeader({
   onFiltersChange,
   allTags,
   email,
+  exportTasks,
 }: {
   view: ViewKey;
   onViewChange: (view: ViewKey) => void;
@@ -56,6 +57,7 @@ export function AppHeader({
   onFiltersChange: (filters: Filters) => void;
   allTags: string[];
   email: string;
+  exportTasks: Task[];
 }) {
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
