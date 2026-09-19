@@ -4,6 +4,9 @@ import {
   CalendarDays,
   CheckSquare,
   Columns3,
+  Download,
+  FileSpreadsheet,
+  FileText,
   Filter,
   LogOut,
   Moon,
@@ -11,6 +14,9 @@ import {
   Sun,
   Table2,
 } from "lucide-react";
+import { toast } from "sonner";
+import { exportTasksToCsv, exportTasksToPdf } from "@/lib/export";
+import type { Task } from "@/lib/tasks";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
